@@ -11,6 +11,8 @@ class FoodController extends Controller
 {
     public function all(Request $request)
     {
+
+
         $id = $request->input('id');
         $limit = $request->input('limit', 6);
         $name = $request->input('name');
@@ -21,6 +23,8 @@ class FoodController extends Controller
 
         $rate_from = $request->input('price_from');
         $rate_to = $request->input('price_to');
+
+
 
         if ($id) {
             $food = Food::find($id);

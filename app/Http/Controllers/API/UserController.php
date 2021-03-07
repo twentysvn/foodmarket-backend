@@ -25,6 +25,8 @@ class UserController extends Controller
                 'password' => 'required'
             ]);
 
+
+
             //cek credensial
             $creds = request(['email', 'password']);
             if (!Auth::attempt($creds)) {
@@ -33,14 +35,23 @@ class UserController extends Controller
                 ], "Auth Failed", 500);
             }
 
+
+
             // jika hash tidak sesuai, kirim error
             $user = User::where('email', $request->email)->first();
+
+
+
+
             if (!Hash::check($request->password, $user->password, [])) {
                 throw new Exception("Invalid creds");
             }
 
+
+
             // login-kan
-            $tokenResult = $user->createToken('authToken')->plainToken;
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
+
             return ResponseFormatter::success([
                 'token' => $tokenResult,
                 'token_type' => 'Bearer',
@@ -75,8 +86,7 @@ class UserController extends Controller
 
             // cek apa sudah ada
             $user = User::where('email', $request->email)->first();
-
-            $tokenResult = $user->createToken('authToken')->plainToken;
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
             return ResponseFormatter::success([
                 'token' => $tokenResult,
                 'token_type' => 'Bearer',
@@ -84,9 +94,8 @@ class UserController extends Controller
             ], 'Register Sukses');
         } catch (Exception $e) {
             return ResponseFormatter::error([
-                'msg' => 'something went wrong',
-                'error' => $e
-            ], '', 500);
+                'error' => $e->getMessage()
+            ], 'Error', 500);
         }
     }
 
@@ -132,6 +141,22 @@ class UserController extends Controller
             $user->update();
 
             return ResponseFormatter::success([$file], 'File successfully uploaded');
+        }
+    }
+
+
+    public function getAll()
+    {
+        try {
+            $users = User::all();
+            return ResponseFormatter::success(
+                $users,
+                'Berhasil mengambil data'
+            );
+        } catch (Exception $e) {
+            return ResponseFormatter::error([
+                'error' => $e->getMessage()
+            ], 'Gagal mengambil data', 500);
         }
     }
 }
