@@ -24,9 +24,6 @@ class UserController extends Controller
                 'email' => 'email|required',
                 'password' => 'required'
             ]);
-
-
-
             //cek credensial
             $creds = request(['email', 'password']);
             if (!Auth::attempt($creds)) {
@@ -34,21 +31,11 @@ class UserController extends Controller
                     'msg' => 'Unauthorized'
                 ], "Auth Failed", 500);
             }
-
-
-
             // jika hash tidak sesuai, kirim error
             $user = User::where('email', $request->email)->first();
-
-
-
-
             if (!Hash::check($request->password, $user->password, [])) {
                 throw new Exception("Invalid creds");
             }
-
-
-
             // login-kan
             $tokenResult = $user->createToken('authToken')->plainTextToken;
 
